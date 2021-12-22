@@ -19,12 +19,12 @@
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer '+ newStudent.accessToken
+                    'Authorization': 'Bearer '+ student.accessToken
                 },
                 type: "POST",
                 data: JSON.stringify(newStudent),
                 //tên API
-                url: "/students/create",
+                url: "http://localhost:8080/students/create",
                 //xử lý khi thành công
                 success: successHandler
 
@@ -35,9 +35,12 @@
 
         function successHandler() {
             $.ajax({
+                headers: {
+                    'Authorization': 'Bearer '+ student.accessToken
+                },
                 type: "GET",
                 //tên API
-                url: "/students",
+                url: "http://localhost:8080/students",
                 //xử lý khi thành công
                 success: function (data) {
                     // hien thi danh sach o day
@@ -54,6 +57,9 @@
         function deleteStudent(a){
             let id=a.getAttribute("href");
             $.ajax({
+                headers: {
+                    'Authorization': 'Bearer '+ student.accessToken
+                },
                 type:"DELETE",
                 url:"http://localhost:8080/students/delete/"+id,
                 success:successHandler
@@ -88,6 +94,9 @@
         function showEdit(a) {
             let id = a.getAttribute("href");
             $.ajax({
+                headers: {
+                    'Authorization': 'Bearer '+ student.accessToken
+                },
                 type: "GET",
                 url: "http://localhost:8080/students/" + id,
                 success: function (student) {

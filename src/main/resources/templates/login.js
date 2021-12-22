@@ -6,7 +6,7 @@ function login1(){
         password: password
     }
     $.ajax({
-        url: "/api/login",
+        url: "http://localhost:8080/api/login",
         type: 'POST',
         headers:{
             "Accept": "application/json",

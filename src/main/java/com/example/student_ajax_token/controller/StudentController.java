@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/students")
+@CrossOrigin("*")
 public class StudentController {
 
     @Autowired
@@ -17,7 +18,7 @@ public class StudentController {
 
 
     @GetMapping("")
-    public ResponseEntity<Iterable<Student>> allCustomer(){
+    public ResponseEntity<Iterable<Student>> allStudent(){
         return new ResponseEntity<>(studentService.findAll(), HttpStatus.OK);
     }
 
