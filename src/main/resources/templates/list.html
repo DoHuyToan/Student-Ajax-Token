@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>List Smartphone</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        let student = JSON.parse(localStorage.getItem("student"))
+        function addNewStudent() {
+            //lay du lieu
+            let name = $('#name').val();
+            let className = $('#className').val();
+            let newStudent = {
+                name: name,
+                className: className,
+            };
+            // goi ajax
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+ newStudent.accessToken
+                },
+                type: "POST",
+                data: JSON.stringify(newStudent),
+                //tên API
+                url: "/students/create",
+                //xử lý khi thành công
+                success: successHandler
+
+            });
+            //chặn sự kiện mặc định của thẻ
+            event.preventDefault();
+        }
+
+        function successHandler() {
+            $.ajax({
+                type: "GET",
+                //tên API
+                url: "/students",
+                //xử lý khi thành công
+                success: function (data) {
+                    // hien thi danh sach o day
+                    let content;
+                    for (let i = 0; i < data.length; i++) {
+                        content += getStudent(data[i]);
+                    }
+                    document.getElementById('studentList').innerHTML = content;
+                }
+            });
+        }
+        successHandler();
+
+        function deleteStudent(a){
+            let id=a.getAttribute("href");
+            $.ajax({
+                type:"DELETE",
+                url:"http://localhost:8080/students/delete/"+id,
+                success:successHandler
+            })
+            event.preventDefault();
+        }
+
+        function getStudent(student) {
+            return `<tr><td >${student.name}</td><td >${student.className}</td>` +
+                `<td><a onclick="showEdit(this)" href="${student.id}">Edit</a></td>` +
+                `<td><a onclick="deleteStudent(this)" href="${student.id}">Delete</a></td></tr>`;
+        }
+
+        function getEditForm(student){
+            return `<table>
+        <input value="${student.id}" type="text" id="idEdit" hidden/>
+        <tr>
+            <td>Name :</td>
+            <td><input value="${student.name}" type="text" id="nameEdit"></td>
+        </tr>
+        <tr>
+            <td>ClassName :</td>
+            <td><input value="${student.className}" type="text" id="classNameEdit"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button onclick="updateStudent()">Edit</button></td>
+        </tr>
+    </table>`
+        }
+
+        function showEdit(a) {
+            let id = a.getAttribute("href");
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/students/" + id,
+                success: function (student) {
+                    document.getElementById("editForm").innerHTML = getEditForm(student)
+                }
+            })
+            event.preventDefault();
+        }
+
+        function updateStudent(){
+            let id=$('#idEdit').val();
+            let name=$('#nameEdit').val();
+            let className=$('#classNameEdit').val();
+            let student={
+                id :id,
+                name:name,
+                className:className,
+            };
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+ student.accessToken
+                },
+                type: "PUT",
+                url: "http://localhost:8080/students/edit",
+                data: JSON.stringify(student),
+                success:function (){
+                    successHandler()
+                    document.getElementById("editForm").innerHTML = ""
+                }
+            })
+            event.preventDefault();
+        }
+
+    </script>
+</head>
+<body>
+<form id="add-student">
+    <table>
+        <tr>
+            <td>Name:</td>
+            <td><input type="text" id="name" placeholder="name"></td>
+        </tr>
+        <tr>
+            <td>ClassName:</td>
+            <td><input type="text" id="className" placeholder="className"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Add" onclick="addNewStudent()"></td>
+        </tr>
+    </table>
+</form>
+<h1>Students List</h1>
+<table>
+    <tr>
+        <td>Name</td>
+        <td>ClassName</td>
+        <td>Edit</td>
+        <td>Delete</td>
+    </tr>
+    <tbody id="studentList">
+
+    </tbody>
+</table>
+<form id="editForm">
+
+</form>
+</body>
+</html>
